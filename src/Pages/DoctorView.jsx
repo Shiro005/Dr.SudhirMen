@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  firestore, 
-  collection, 
-  query, 
-  where, 
-  getDocs, 
+import {
+  firestore,
+  collection,
+  query,
+  where,
+  getDocs,
   orderBy,
   updateDoc,
   doc
@@ -25,7 +25,7 @@ const DoctorView = () => {
     try {
       setLoading(true);
       const patientsRef = collection(firestore, 'patients');
-      
+
       // Query with date filter
       const q = query(
         patientsRef,
@@ -34,7 +34,7 @@ const DoctorView = () => {
       );
 
       const querySnapshot = await getDocs(q);
-      
+
       if (querySnapshot.empty) {
         setPatients([]);
         setFilteredPatients([]);
@@ -56,7 +56,7 @@ const DoctorView = () => {
         const patientsRef = collection(firestore, 'patients');
         const q = query(patientsRef, where('dateKey', '==', selectedDate));
         const querySnapshot = await getDocs(q);
-        
+
         const patientsData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -109,9 +109,9 @@ const DoctorView = () => {
         completed: completed,
         status: completed ? 'completed' : 'pending'
       });
-      
+
       // Update local state
-      setPatients(prev => prev.map(p => 
+      setPatients(prev => prev.map(p =>
         p.id === patientId ? { ...p, completed, status: completed ? 'completed' : 'pending' } : p
       ));
     } catch (error) {
@@ -135,214 +135,373 @@ const DoctorView = () => {
     return { total, completed, pending };
   };
 
+  // const generatePrintableReport = (patient) => {
+  //   return `
+  //     <!DOCTYPE html>
+  //     <html>
+  //     <head>
+  //       <title>Patient Report - ${patient.name}</title>
+  //       <meta charset="UTF-8">
+  //       <style>
+  //         @media print {
+  //           @page {
+  //             size: A4;
+  //             margin: 40px 25px 25px 25px;
+  //           }
+  //           body {
+  //             font-family: 'Arial', sans-serif;
+  //             font-size: 12px;
+  //             line-height: 1.4;
+  //             color: #000;
+  //             margin: 0;
+  //             padding: 0;
+  //           }
+  //         }
+  //         body {
+  //           font-family: 'Arial', sans-serif;
+  //           font-size: 12px;
+  //           line-height: 1.4;
+  //           color: #000;
+  //           margin: 0;
+  //           padding: 0;
+  //         }
+  //         .clinic-header {
+  //           text-align: center;
+  //           border-bottom: 2px solid #333;
+  //           padding-bottom: 15px;
+  //           margin-bottom: 20px;
+  //         }
+  //         .clinic-header h1 {
+  //           font-size: 18px;
+  //           margin: 0 0 5px 0;
+  //           color: #333;
+  //         }
+  //         .clinic-header p {
+  //           font-size: 11px;
+  //           margin: 2px 0;
+  //           color: #666;
+  //         }
+  //         .report-title {
+  //           text-align: center;
+  //           font-size: 14px;
+  //           font-weight: bold;
+  //           margin: 15px 0;
+  //           color: #333;
+  //         }
+  //         .patient-info {
+  //           margin: 15px 0;
+  //         }
+  //         .info-section {
+  //           margin: 10px 0;
+  //         }
+  //         .info-row {
+  //           display: flex;
+  //           margin: 3px 0;
+  //         }
+  //         .info-label {
+  //           font-weight: bold;
+  //           min-width: 120px;
+  //         }
+  //         .vital-signs {
+  //           margin: 15px 0;
+  //         }
+  //         .additional-info {
+  //           margin: 15px 0;
+  //         }
+  //         .footer {
+  //           margin-top: 30px;
+  //           text-align: center;
+  //           font-size: 10px;
+  //           color: #666;
+  //           border-top: 1px solid #ccc;
+  //           padding-top: 10px;
+  //         }
+  //         .signature-area {
+  //           margin-top: 40px;
+  //           border-top: 1px solid #000;
+  //           width: 200px;
+  //           padding-top: 5px;
+  //           font-size: 11px;
+  //         }
+  //       </style>
+  //     </head>
+  //     <body>
+  //       <!-- Clinic Branding Header -->
+  //       <div class="clinic-header">
+  //         <h1>SARYODAY CLINIC</h1>
+  //         <p>Healthcare Excellence Since 2010</p>
+  //         <p>123 Medical Street, Healthcare City | Phone: (555) 123-4567</p>
+  //         <p>Email: contact@saryodayclinic.com | www.saryodayclinic.com</p>
+  //       </div>
+
+  //       <!-- Report Title -->
+  //       <div class="report-title">
+  //         PATIENT MEDICAL REPORT
+  //       </div>
+
+  //       <!-- Patient Information -->
+  //       <div class="patient-info">
+  //         <div class="info-section">
+  //           <div class="info-row">
+  //             <span class="info-label">Report Date:</span>
+  //             <span>${new Date().toLocaleDateString()}</span>
+  //           </div>
+  //           <div class="info-row">
+  //             <span class="info-label">Patient ID:</span>
+  //             <span>#${patient.patientNumber}</span>
+  //           </div>
+  //           <div class="info-row">
+  //             <span class="info-label">Full Name:</span>
+  //             <span>${patient.name}</span>
+  //           </div>
+  //           <div class="info-row">
+  //             <span class="info-label">Age:</span>
+  //             <span>${patient.age} years</span>
+  //           </div>
+  //           <div class="info-row">
+  //             <span class="info-label">Gender:</span>
+  //             <span>${patient.gender || 'Not specified'}</span>
+  //           </div>
+  //           <div class="info-row">
+  //             <span class="info-label">Phone:</span>
+  //             <span>${patient.phone}</span>
+  //           </div>
+  //           <div class="info-row">
+  //             <span class="info-label">Visit Date:</span>
+  //             <span>${patient.date}</span>
+  //           </div>
+  //           <div class="info-row">
+  //             <span class="info-label">Visit Time:</span>
+  //             <span>${patient.time}</span>
+  //           </div>
+  //         </div>
+  //       </div>
+
+  //       <!-- Vital Signs -->
+  //       <div class="vital-signs">
+  //         <div style="font-weight: bold; margin-bottom: 8px;">VITAL SIGNS</div>
+  //         <div class="info-row">
+  //           <span class="info-label">Weight:</span>
+  //           <span>${patient.weight} kg</span>
+  //         </div>
+  //         <div class="info-row">
+  //           <span class="info-label">Temperature:</span>
+  //           <span>${patient.temperature || 'N/A'} °C</span>
+  //         </div>
+  //       </div>
+
+  //       <!-- Additional Information -->
+  //       ${patient.additionalInfo ? `
+  //       <div class="additional-info">
+  //         <div style="font-weight: bold; margin-bottom: 8px;">ADDITIONAL NOTES</div>
+  //         <div style="margin: 5px 0; line-height: 1.3;">${patient.additionalInfo}</div>
+  //       </div>
+  //       ` : ''}
+
+  //       <!-- Visit Status -->
+  //       <div style="margin: 15px 0;">
+  //         <div class="info-row">
+  //           <span class="info-label">Visit Status:</span>
+  //           <span style="font-weight: bold; color: ${patient.completed ? '#059669' : '#d97706'}">
+  //             ${patient.completed ? 'COMPLETED' : 'PENDING'}
+  //           </span>
+  //         </div>
+  //       </div>
+
+  //       <!-- Doctor's Notes Area -->
+  //       <div style="margin: 25px 0;">
+  //         <div style="font-weight: bold; margin-bottom: 8px;">DOCTOR'S NOTES</div>
+  //         <div style="border: 1px solid #ccc; min-height: 80px; padding: 8px; margin: 5px 0;">
+  //           <!-- Empty space for doctor to write notes -->
+  //         </div>
+  //       </div>
+
+  //       <!-- Signature Area -->
+  //       <div style="display: flex; justify-content: space-between; margin-top: 40px;">
+  //         <div class="signature-area">
+  //           Patient's Signature
+  //         </div>
+  //         <div class="signature-area">
+  //           Doctor's Signature & Stamp
+  //         </div>
+  //       </div>
+
+  //       <!-- Footer -->
+  //       <div class="footer">
+  //         <p>This is a computer-generated report. No physical signature is required for digital records.</p>
+  //         <p>Generated on ${new Date().toLocaleString()} • Saryoday Clinic Management System</p>
+  //       </div>
+  //     </body>
+  //     </html>
+  //   `;
+  // };
+
   const generatePrintableReport = (patient) => {
     return `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Patient Report - ${patient.name}</title>
-        <meta charset="UTF-8">
-        <style>
-          @media print {
-            @page {
-              size: A4;
-              margin: 40px 25px 25px 25px;
-            }
-            body {
-              font-family: 'Arial', sans-serif;
-              font-size: 12px;
-              line-height: 1.4;
-              color: #000;
-              margin: 0;
-              padding: 0;
-            }
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Patient Report - ${patient.name}</title>
+      <meta charset="UTF-8">
+      <style>
+        @media print {
+          @page {
+            size: A4;
+            margin: 0;
           }
           body {
-            font-family: 'Arial', sans-serif;
-            font-size: 12px;
-            line-height: 1.4;
-            color: #000;
             margin: 0;
             padding: 0;
           }
-          .clinic-header {
-            text-align: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-          }
-          .clinic-header h1 {
-            font-size: 18px;
-            margin: 0 0 5px 0;
-            color: #333;
-          }
-          .clinic-header p {
-            font-size: 11px;
-            margin: 2px 0;
-            color: #666;
-          }
-          .report-title {
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            margin: 15px 0;
-            color: #333;
-          }
-          .patient-info {
-            margin: 15px 0;
-          }
-          .info-section {
-            margin: 10px 0;
-          }
-          .info-row {
-            display: flex;
-            margin: 3px 0;
-          }
-          .info-label {
-            font-weight: bold;
-            min-width: 120px;
-          }
-          .vital-signs {
-            margin: 15px 0;
-          }
-          .additional-info {
-            margin: 15px 0;
-          }
-          .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 10px;
-            color: #666;
-            border-top: 1px solid #ccc;
-            padding-top: 10px;
-          }
-          .signature-area {
-            margin-top: 40px;
-            border-top: 1px solid #000;
-            width: 200px;
-            padding-top: 5px;
-            font-size: 11px;
-          }
-        </style>
-      </head>
-      <body>
-        <!-- Clinic Branding Header -->
-        <div class="clinic-header">
-          <h1>SARYODAY CLINIC</h1>
-          <p>Healthcare Excellence Since 2010</p>
-          <p>123 Medical Street, Healthcare City | Phone: (555) 123-4567</p>
-          <p>Email: contact@saryodayclinic.com | www.saryodayclinic.com</p>
-        </div>
-
-        <!-- Report Title -->
-        <div class="report-title">
-          PATIENT MEDICAL REPORT
-        </div>
-
-        <!-- Patient Information -->
-        <div class="patient-info">
-          <div class="info-section">
-            <div class="info-row">
-              <span class="info-label">Report Date:</span>
-              <span>${new Date().toLocaleDateString()}</span>
+        }
+        
+        body {
+          font-family: 'Arial', sans-serif;
+          font-size: 12px;
+          line-height: 1.2;
+          color: #000;
+          margin: 0;
+          padding: 0;
+          height: 100vh;
+        }
+        
+        .top-space {
+          height: 20vh;
+          background: transparent;
+        }
+        
+        .content-area {
+          margin: 0 15px;
+        }
+        
+        .patient-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 10px;
+          border-bottom: 1px solid #000;
+          padding-bottom: 5px;
+        }
+        
+        .patient-left {
+          flex: 1;
+        }
+        
+        .patient-right {
+          text-align: right;
+          flex: 1;
+        }
+        
+        .patient-name {
+          font-size: 14px;
+          font-weight: bold;
+          margin: 0;
+        }
+        
+        .patient-details {
+          margin: 2px 0;
+          font-size: 11px;
+        }
+        
+        .detail-row {
+          display: flex;
+          margin: 1px 0;
+        }
+        
+        .detail-label {
+          font-weight: bold;
+          min-width: 80px;
+        }
+        
+        .detail-value {
+          flex: 1;
+        }
+        
+        .section {
+          margin: 8px 0;
+        }
+        
+        .section-title {
+          font-weight: bold;
+          margin-bottom: 3px;
+          font-size: 11px;
+        }
+        
+        .vital-signs {
+          display: flex;
+          gap: 20px;
+          margin: 5px 0;
+        }
+        
+        .vital-item {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+        
+        .additional-notes {
+          margin: 8px 0;
+          padding: 5px;
+          border: 1px solid #ccc;
+          min-height: 60px;
+          font-size: 11px;
+        }
+        
+        .doctor-notes {
+          margin: 8px 0;
+          padding: 5px;
+          border: 1px solid #ccc;
+          min-height: 80px;
+          font-size: 11px;
+        }
+      </style>
+    </head>
+    <body>
+      <!-- Top 20% Blank Space -->
+      <div class="top-space"></div>
+      
+      <!-- Content Area with Narrow Margins -->
+      <div class="content-area">
+        
+        <!-- Patient Header Row -->
+        <div class="patient-header">
+          <div class="patient-left">
+            <div class="patient-name">${patient.name}</div>
+            <div class="patient-details">
+              <div><strong>Age:</strong> ${patient.age} years</div>
+              <div><strong>Gender:</strong> ${patient.gender || 'Not specified'}</div>
             </div>
-            <div class="info-row">
-              <span class="info-label">Patient ID:</span>
-              <span>#${patient.patientNumber}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Full Name:</span>
-              <span>${patient.name}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Age:</span>
-              <span>${patient.age} years</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Gender:</span>
-              <span>${patient.gender || 'Not specified'}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Phone:</span>
-              <span>${patient.phone}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Visit Date:</span>
-              <span>${patient.date}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Visit Time:</span>
-              <span>${patient.time}</span>
+          </div>
+          
+          <div class="patient-right">
+            <div class="patient-details">
+              <div><strong>Weight:</strong> ${patient.weight} kg</div>
+              <div><strong>Date:</strong> ${patient.date}</div>
+              <div><strong>Time:</strong> ${patient.time}</div>
             </div>
           </div>
         </div>
-
-        <!-- Vital Signs -->
-        <div class="vital-signs">
-          <div style="font-weight: bold; margin-bottom: 8px;">VITAL SIGNS</div>
-          <div class="info-row">
-            <span class="info-label">Weight:</span>
-            <span>${patient.weight} kg</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Temperature:</span>
-            <span>${patient.temperature || 'N/A'} °C</span>
-          </div>
+        
+        <!-- Patient Number -->
+        <div style="text-align: center; margin: 5px 0; font-weight: bold;">
+          Patient Number: ${patient.patientNumber}
         </div>
-
-        <!-- Additional Information -->
-        ${patient.additionalInfo ? `
-        <div class="additional-info">
-          <div style="font-weight: bold; margin-bottom: 8px;">ADDITIONAL NOTES</div>
-          <div style="margin: 5px 0; line-height: 1.3;">${patient.additionalInfo}</div>
-        </div>
-        ` : ''}
-
-        <!-- Visit Status -->
-        <div style="margin: 15px 0;">
-          <div class="info-row">
-            <span class="info-label">Visit Status:</span>
-            <span style="font-weight: bold; color: ${patient.completed ? '#059669' : '#d97706'}">
-              ${patient.completed ? 'COMPLETED' : 'PENDING'}
-            </span>
-          </div>
-        </div>
-
-        <!-- Doctor's Notes Area -->
-        <div style="margin: 25px 0;">
-          <div style="font-weight: bold; margin-bottom: 8px;">DOCTOR'S NOTES</div>
-          <div style="border: 1px solid #ccc; min-height: 80px; padding: 8px; margin: 5px 0;">
-            <!-- Empty space for doctor to write notes -->
-          </div>
-        </div>
-
-        <!-- Signature Area -->
-        <div style="display: flex; justify-content: space-between; margin-top: 40px;">
-          <div class="signature-area">
-            Patient's Signature
-          </div>
-          <div class="signature-area">
-            Doctor's Signature & Stamp
-          </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-          <p>This is a computer-generated report. No physical signature is required for digital records.</p>
-          <p>Generated on ${new Date().toLocaleString()} • Saryoday Clinic Management System</p>
-        </div>
-      </body>
-      </html>
-    `;
+        
+        
+      
+      </div>
+    </body>
+    </html>
+  `;
   };
 
   const printPatientReport = (patient) => {
     const printContent = generatePrintableReport(patient);
     const printWindow = window.open('', '_blank', 'width=800,height=600');
-    
+
     printWindow.document.write(printContent);
     printWindow.document.close();
-    
+
     // Wait for content to load before printing
     printWindow.onload = () => {
       printWindow.focus();
@@ -400,22 +559,20 @@ const DoctorView = () => {
                 {patient.time}
               </td>
               <td className="px-4 py-3 whitespace-nowrap">
-                <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                  patient.completed 
-                    ? 'bg-green-100 text-green-800' 
+                <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${patient.completed
+                    ? 'bg-green-100 text-green-800'
                     : 'bg-orange-100 text-orange-800'
-                }`}>
+                  }`}>
                   {patient.completed ? 'Completed' : 'Pending'}
                 </span>
               </td>
               <td className="px-4 py-3 whitespace-nowrap text-sm font-medium space-x-1">
                 <button
                   onClick={() => handleStatusChange(patient.id, !patient.completed)}
-                  className={`px-2 py-1 rounded text-xs ${
-                    patient.completed 
-                      ? 'bg-orange-500 text-white hover:bg-orange-600' 
+                  className={`px-2 py-1 rounded text-xs ${patient.completed
+                      ? 'bg-orange-500 text-white hover:bg-orange-600'
                       : 'bg-green-500 text-white hover:bg-green-600'
-                  } transition-colors`}
+                    } transition-colors`}
                 >
                   {patient.completed ? 'Mark Pending' : 'Mark Done'}
                 </button>
@@ -436,7 +593,7 @@ const DoctorView = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-4 px-4">
       <div className="">
-        
+
         {/* Header Section */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4">
           <div className="px-6 py-4">
@@ -521,31 +678,28 @@ const DoctorView = () => {
               <div className="flex space-x-2">
                 <button
                   onClick={() => setActiveTab('all')}
-                  className={`flex-1 px-3 py-2 text-sm rounded transition-colors ${
-                    activeTab === 'all' 
-                      ? 'bg-orange-500 text-white' 
+                  className={`flex-1 px-3 py-2 text-sm rounded transition-colors ${activeTab === 'all'
+                      ? 'bg-orange-500 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                    }`}
                 >
                   All ({patients.length})
                 </button>
                 <button
                   onClick={() => setActiveTab('pending')}
-                  className={`flex-1 px-3 py-2 text-sm rounded transition-colors ${
-                    activeTab === 'pending' 
-                      ? 'bg-orange-500 text-white' 
+                  className={`flex-1 px-3 py-2 text-sm rounded transition-colors ${activeTab === 'pending'
+                      ? 'bg-orange-500 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                    }`}
                 >
                   Pending ({pendingPatients.length})
                 </button>
                 <button
                   onClick={() => setActiveTab('completed')}
-                  className={`flex-1 px-3 py-2 text-sm rounded transition-colors ${
-                    activeTab === 'completed' 
-                      ? 'bg-orange-500 text-white' 
+                  className={`flex-1 px-3 py-2 text-sm rounded transition-colors ${activeTab === 'completed'
+                      ? 'bg-orange-500 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                    }`}
                 >
                   Completed ({completedPatients.length})
                 </button>
@@ -581,8 +735,8 @@ const DoctorView = () => {
               </div>
               {renderPatientTable(
                 activeTab === 'all' ? filteredPatients :
-                activeTab === 'pending' ? filteredPatients.filter(p => !p.completed) :
-                filteredPatients.filter(p => p.completed)
+                  activeTab === 'pending' ? filteredPatients.filter(p => !p.completed) :
+                    filteredPatients.filter(p => p.completed)
               )}
             </>
           )}
