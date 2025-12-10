@@ -38,13 +38,10 @@ const Login = ({ onLogin }) => {
   const getUserType = (email) => {
     const adminEmails = [
       'admin@saryodayclinic.com',
-      'dr.sudhir@saryodayclinic.com',
-      'sudhir121@gmail.com'
     ];
 
     const doctorEmails = [
       'doctor@saryodayclinic.com',
-      'dr.men@saryodayclinic.com'
     ];
 
     if (adminEmails.includes(email)) return 'admin';

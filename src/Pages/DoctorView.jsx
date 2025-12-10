@@ -361,7 +361,7 @@ const DoctorView = () => {
           line-height: 1.2;
           color: #000;
           margin: 0;
-          padding: 0;
+          padding: 0 10px;
           height: 100vh;
         }
         
