@@ -366,7 +366,7 @@ const DoctorView = () => {
         }
         
         .top-space {
-          height: 15vh;
+          height: 16vh;
           background: transparent;
         }
         
