@@ -228,7 +228,7 @@ const PatientList = () => {
       'Gender': patient.gender || 'Not specified',
       'Phone': patient.phone,
       'Weight (kg)': patient.weight,
-      'Temperature (°C)': patient.temperature,
+      'Temperature (°F)': patient.temperature,
       'Date': patient.date,
       'Time': patient.time,
       'Status': patient.completed ? 'Completed' : 'Pending',
@@ -474,7 +474,7 @@ const PatientList = () => {
                                 className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-orange-500"
                                 placeholder="Temp"
                               />
-                              <span className="text-xs">°C</span>
+                              <span className="text-xs">°F</span>
                             </div>
                             <select
                               name="gender"

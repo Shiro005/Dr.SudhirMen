@@ -357,7 +357,7 @@ const DoctorView = () => {
         
         body {
           font-family: 'Arial', sans-serif;
-          font-size: 12px;
+          font-size: 13px;
           line-height: 1.2;
           color: #000;
           margin: 0;
@@ -366,12 +366,12 @@ const DoctorView = () => {
         }
         
         .top-space {
-          height: 20vh;
+          height: 15vh;
           background: transparent;
         }
         
         .content-area {
-          margin: 0 15px;
+          margin: 0 25px;
         }
         
         .patient-header {

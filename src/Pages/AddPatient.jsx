@@ -356,7 +356,7 @@ const AddPatient = () => {
                       className="w-full px-3 py-2 pr-10 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
                       placeholder="36.6"
                     />
-                    <span className="absolute right-3 top-2 text-xs text-gray-500">°C</span>
+                    <span className="absolute right-3 top-2 text-xs text-gray-500">°F</span>
                   </div>
                 </div>
               </div>
